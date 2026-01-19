@@ -1,53 +1,71 @@
-# Zabbix Linux Monitoring with Auto‑Remediation
+# Zabbix Infrastructure Monitoring (VMware + Linux)
 
-This repository demonstrates a production‑style Linux monitoring setup using Zabbix,
-focused on detecting sustained CPU pressure and responding intelligently through
-automation and escalation.
+This repository documents a layered infrastructure monitoring approach
+implemented using Zabbix, combining VMware hypervisor visibility with
+Linux agent-based monitoring.
 
-## 📌 Overview
+The design prioritizes early signal detection, blast-radius awareness,
+and alert noise reduction over exhaustive metric collection.
 
-The system follows a layered monitoring approach:
+## Overview
 
-1. **Detection** – Identify sustained CPU pressure using Zabbix triggers  
-2. **Auto‑Remediation** – Attempt safe, automated recovery on the host  
-3. **Alert Actions** – Execute remediation before notifying humans  
-4. **Escalation** – Notify engineers only if the issue persists  
+The monitoring system follows a layered approach:
 
-This design reduces alert fatigue while ensuring real problems receive attention.
+1. **Hypervisor Monitoring** – VMware ESXi host visibility
+2. **Discovery-Based Monitoring** – Automatic detection of VMs and resources
+3. **Agent-Based Monitoring** – Linux OS-level health and performance
+4. **Selective Alerting & Escalation** – Signal-driven notifications
 
----
+This approach reduces blind spots and improves root-cause analysis by
+monitoring infrastructure at the appropriate layer.
 
-## 🧱 Repository Structure
+## VMware Infrastructure Monitoring
 
-architecture/ # High‑level system design
-dashboards/ # Zabbix dashboard definitions
-triggers/ # CPU pressure trigger definitions
-scripts/ # Monitoring helper scripts
-remediation/ # Auto‑remediation scripts
-actions/ # Zabbix alert action documentation
-escalation/ # Alert escalation policies
+Zabbix is used to monitor VMware ESXi hosts and associated resources,
+providing visibility into host-level conditions that may impact multiple
+virtual machines simultaneously.
 
----
+Monitored signals include:
+- ESXi CPU utilization
+- ESXi memory usage and pressure
+- Host-level resource contention indicators
 
-## ⚙️ CPU Pressure Workflow
+Monitoring at the hypervisor layer enables earlier detection of systemic
+issues than guest-only monitoring.
 
-1. Zabbix detects sustained CPU pressure  
-2. Auto‑remediation script is executed on the host  
-3. System state is re‑evaluated after remediation  
-4. If pressure persists, escalation policies apply  
+## Example Use Case: Sustained CPU Pressure
 
----
+This use case demonstrates how Zabbix detects and responds to sustained
+CPU pressure on a Linux virtual machine using agent-based monitoring and
+time-windowed trigger evaluation.
 
-## 🧠 Design Principles
+Rather than alerting on transient spikes, the system evaluates CPU
+utilization over a rolling five-minute window to identify real
+performance degradation caused by sustained load or runaway processes.
 
-- Automate before escalating  
-- Separate policy from implementation  
-- Minimize alert noise  
-- Favor safe, reversible remediation  
+## Demonstration
 
----
+This use case is demonstrated end-to-end in a recorded walkthrough that
+shows how the monitoring architecture behaves under sustained CPU load.
 
-## ✅ Use Case
+The demonstration covers:
+- Baseline system state verification
+- Sustained CPU load generation on a Linux VM
+- Trigger evaluation using a five-minute rolling average
+- Alert creation with visual evidence
+- Automatic alert recovery once conditions normalize
 
-This project reflects real‑world SRE and DevOps monitoring practices and is suitable
-as a reference implementation or portfolio example.
+🎥 **Demo Video (Loom):**  
+(Add Loom link here)
+
+Detailed documentation of this demo is available here:  
+[demos/cpu-pressure-demo.md](demos/cpu-pressure-demo.md)
+
+## Design Principles
+
+- Monitor at the lowest layer that provides early signal
+- Prefer sustained-condition detection over transient spikes
+- Automate before escalating to humans
+- Separate policy from implementation
+- Favor safe, reversible remediation
+- Minimize alert noise while preserving signal quality
